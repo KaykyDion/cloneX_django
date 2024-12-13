@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+    {% if post.pk %}
+        Edit Post
+    {% else %}
+        New Post
+    {% endif %}
+{% endblock page_title %}
+
+{% block content %}
+    <div class="container d-flex align-items-center justify-content-center flex-column">
+    {% if post.pk %}
+        <h1>Edit Post</h1>
+    {% else %}
+        <h1>New Post</h1>
+    {% endif %}
+    {% if form %}
+      <form method="POST" class="d-flex align-items-center gap-2">
+        {% csrf_token %} {{ form }}
+        <button type="submit" class="btn btn-success">
+          {% if post.pk %}
+            Confirm
+          {% else %}
+            Publish
+          {% endif %}
+        </button>
+        <a class="btn btn-danger sm" href="{% url 'posts' %}">Cancel</a>
+      </form>
+    </div>
+    {% endif %}
+{% endblock content %}
+

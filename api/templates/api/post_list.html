@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+    Feed
+{% endblock page_title %}
+{% block content %}
+    <h1 class="mb-4 mx-auto" style="width: 100px;">Posts</h1>
+    <a href="{% url 'post_form' %}" class="btn btn-primary mb-4 mx-auto" style="width: 100%;">New Post</a>
+    {% for post in post_list %}
+    <div class="alert alert-light" role="alert">
+        <div class="container">
+            <div>
+                {% comment %} <th scope="row">{{ post.pk }}</th> {% endcomment %}
+                <h3 class="mb-2 text-dark"><strong>{{ post.title }}</strong></h3> </br>
+                <p class="text-secondary">Published at {{ post.created_at }}</p>
+                {% if post.updatedAt and post.updatedAt != post.created_at %}
+                  <p class="text-secondary">Updated at {{ post.updatedAt }}</p>
+                {% endif %}
+                <p class="d-flex align-items-center gap-2">
+                    <a href="#" class="btn btn-sm btn-primary text-center">Like</a>
+                    <a href="{% url 'post_update' pk=post.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                    <a href="{% url 'post_delete' pk=post.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                </p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+{% endblock content %}
