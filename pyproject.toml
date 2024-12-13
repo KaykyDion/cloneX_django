@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "clonex-django"
+version = "0.1.0"
+description = "cloneX API"
+authors = ["Kayky Dion <kayky.dion@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pytest = "^8.3.4"
+factory-boy = "^3.3.1"
+django = "^5.1.4"
+djangorestframework = "^3.15.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
