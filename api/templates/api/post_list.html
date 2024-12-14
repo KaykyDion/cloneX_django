@@ -3,26 +3,43 @@
 {% block page_title %}
     Feed
 {% endblock page_title %}
+
 {% block content %}
-    <h1 class="mb-4 mx-auto" style="width: 100px;">Posts</h1>
-    <a href="{% url 'post_form' %}" class="btn btn-primary mb-4 mx-auto" style="width: 100%;">New Post</a>
+    <h1 class="mb-4">Posts</h1>
+    <a href="{% url 'post_form' %}" class="btn btn-primary mb-4">New post</a>
     {% for post in post_list %}
-    <div class="alert alert-light" role="alert">
+    <div class="alert alert-dark bg-light" role="alert">
         <div class="container">
             <div>
                 {% comment %} <th scope="row">{{ post.pk }}</th> {% endcomment %}
-                <h3 class="mb-2 text-dark"><strong>{{ post.title }}</strong></h3> </br>
+                <p>@{{ post.user.username }}</p>
+                <h3 class="alert alert-dark bg-light text-primary"><strong>{{ post.title }}</strong></h3> </br>
                 <p class="text-secondary">Published at {{ post.created_at }}</p>
                 {% if post.updatedAt and post.updatedAt != post.created_at %}
-                  <p class="text-secondary">Updated at {{ post.updatedAt }}</p>
+                    <p class="text-secondary">Updated at {{ post.updatedAt }}</p>
                 {% endif %}
-                <p class="d-flex align-items-center gap-2">
-                    <a href="#" class="btn btn-sm btn-primary text-center">Like</a>
-                    <a href="{% url 'post_update' pk=post.pk %}" class="btn btn-secondary btn-sm">Edit</a>
-                    <a href="{% url 'post_delete' pk=post.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                <p>
+                    <div class="d-flex align-items-center gap-2">
+                        {% if post.like_amount > 0 %}
+                            <p class="like-counter"><span class="bg-success rounded p-1 text-light">{{post.like_amount}}</span> Likes</p>
+                        {% endif %}
+                        {% if user in post.likes.all %}
+                            <a href="{% url 'like_post' post.id %}" class="dislike-btn btn btn-danger mb-2">Remove Like</a>
+                        {% else %}
+                            <a href="{% url 'like_post' post.id %}" class="btn btn-primary mb-2">Like</a>
+                        {% endif %}              
+                    </div>       
+                    {% comment %} <a href="#" class="btn btn-primary">Like</a> {% endcomment %}
+                    {% if post.user.id == request.user.id %}
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'post_update' pk=post.pk %}" class="btn btn-secondary">Edit</a>
+                            <a href="{% url 'post_delete' pk=post.pk %}" class="btn btn-danger">Delete</a>
+                        </div>
+                    {% endif %}
                 </p>
             </div>
-          </div>
         </div>
-        {% endfor %}
+    </div>
+    {% endfor %}
+
 {% endblock content %}

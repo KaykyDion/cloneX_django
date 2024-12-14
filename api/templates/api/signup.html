@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block page_title %}
+    Sign Up
+{% endblock page_title %}
+{% block content %}
+<section class="d-flex flex-column align-items-center pt-5">
+  <div class="bg-secondary alert d-flex flex-column align-items-center m-3 w-25">
+    <h2>Sign up</h2>
+    {% if form %}
+        <form method="POST" class="d-flex flex-column align-items-center pt-2">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <button type="submit" class="btn btn-success">Sign up</button>
+            <a class="text-warning" href="{% url 'sign_in' %}">I already have a registration</a>
+        </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock content %}

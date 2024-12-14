@@ -18,12 +18,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from api.views import PostView, PostCreateView, PostUpdateView, PostDeleteView
+from api.views import PostView, PostCreateView, PostUpdateView, PostDeleteView, signUp, signIn, like_post
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', PostView.as_view(), name="posts"),
-    path('create', PostCreateView.as_view(), name="post_form"),
+    path("feed", PostView.as_view(), name="posts"),
+    path("create", PostCreateView.as_view(), name="post_form"),
     path("update/<int:pk>", PostUpdateView.as_view(), name="post_update"),
     path("delete/<int:pk>", PostDeleteView.as_view(), name="post_delete"),
+    path("", signUp, name="sign_up"),
+    path("signIn", signIn, name="sign_in"),
+    path("like/<int:pk>/", like_post, name="like_post"),
 ]
