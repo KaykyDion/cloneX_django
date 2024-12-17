@@ -6,11 +6,11 @@ authors = ["Kayky Dion <kayky.dion@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
-pytest = "^8.3.4"
-factory-boy = "^3.3.1"
-django = "^5.1.4"
-djangorestframework = "^3.15.2"
+python = "^3.9"
+pytest = "^7.4.2"
+factory-boy = "^3.2.1"
+django = "^4.2"
+djangorestframework = "^3.14.0"
 
 
 [build-system]
