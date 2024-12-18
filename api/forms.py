@@ -88,3 +88,59 @@ class SignInForm(forms.Form):
         super(SignInForm, self).__init__(*args, **kwargs)
         self.fields["username"].label = False
         self.fields["password"].label = False
+
+class UpdateProfileForm(forms.Form):
+    username = forms.CharField(
+        max_length=18,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Username",
+                "required": True,
+                "max-length": 18,
+            }
+        ),
+    )
+    name = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Name",
+                "required": True,
+                "max-length": 12,
+            }
+        ),
+    )
+    surname = forms.CharField(
+        max_length=14,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Last Name",
+                "required": True,
+                "max-length": 14,
+            }
+        ),
+    )
+    password = forms.CharField(
+        max_length=190,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-input",
+                "placeholder": "Password",
+                "required": True,
+                "type": "password",
+            }
+        ),
+    )
+    def __init__(self, *args, **kwargs):
+        super(UpdateProfileForm, self).__init__(*args, **kwargs)
+        self.fields["username"].label = False
+        self.fields["name"].label = False
+        self.fields["surname"].label = False
+        self.fields["password"].label = False

@@ -23,6 +23,10 @@
     <nav class="navbar mb-4 bg-primary text-light">
       <div class="container">
         <a class="navbar-brand" href="{% url 'posts' %}"><h2>cloneX</h2></a>
+        <div class="d-flex gap-2">
+          <h4>{{ user.username }}</h4>
+          <a class="text-light" href="{% url 'update_profile' %}"><i class="bi bi-pencil"></i></a>
+        </div>
       </div>
     </nav>
     <main class="container">{% block content %}{% endblock content %}</main>

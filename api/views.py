@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 
-from api.forms import SignInForm, SignUpForm
+from api.forms import SignInForm, SignUpForm, UpdateProfileForm
 from .models import Post
 from django.contrib.auth.models import User
 
@@ -90,3 +90,46 @@ def like_post(request, pk):
             post.likes.add(request.user)
         return redirect(request.META.get("HTTP_REFERER"))
     return redirect("")
+
+def updateProfile(request):
+    if request.method == "POST":
+        form = UpdateProfileForm(request.POST)
+        if form.is_valid():
+            user = User.objects.get(id=request.user.id)  # Obtém o usuário autenticado
+            first_name = form.cleaned_data["name"].lower()
+            last_name = form.cleaned_data["surname"].lower()
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            
+            # Verifica se o novo nome de usuário já está em uso por outro usuário
+            if User.objects.filter(username=username).exclude(id=user.id).exists():
+                return HttpResponse("The username is already taken.")
+            
+            # Atualiza os campos permitidos
+            user.first_name = first_name
+            user.last_name = last_name
+            user.username = username
+            
+            # Atualiza a senha apenas se fornecida
+            if password:
+                user.set_password(password)
+            
+            user.save()  # Salva as alterações no banco de dados
+            
+            # Reautentica o usuário após a alteração da senha
+            if password:
+                user = authenticate(username=username, password=password)
+                login(request, user)
+            
+            authenticate(request, username=username, password=password)
+            
+            return redirect("posts")  # Redireciona para a página de perfil
+        else:
+            return HttpResponse("Invalid form data. Please try again.")
+    else:
+        form = UpdateProfileForm(initial={
+            "name": request.user.first_name,
+            "surname": request.user.last_name,
+            "username": request.user.username,
+        })
+        return render(request, "api/update_profile.html", {"form": form})
