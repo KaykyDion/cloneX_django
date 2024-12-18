@@ -1,5 +1,4 @@
 from django.http import HttpResponse
-from django import forms
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -8,35 +7,39 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 
 from api.forms import SignInForm, SignUpForm, UpdateProfileForm
-from .models import Post
+from .models import Post, Follower
 from django.contrib.auth.models import User
 
 # Create your views here.
 class PostView(ListView):
-  model = Post
-
-  def Posts(request):
     model = Post
-    user = User.objects.get(id=request.user.id)
-    return render(request, "api/signup.html", {"posts": model, "user": user})
+    template_name = "api/feed.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["posts"] = Post.objects.all()
+        context["following"] = Follower.objects.filter(user=user).values_list('followed', flat=True)
+        print(user.following.all())  # Debug: Imprime todos os que o usuário segue
+        return context
 
 class PostCreateView(CreateView):
-  model = Post
-  fields = ["title"]
-  success_url = reverse_lazy("posts")
+    model = Post
+    fields = ["title"]
+    success_url = reverse_lazy("posts")
 
-  def form_valid(self, form):
-      form.instance.user = self.request.user
-      return super().form_valid(form)
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 class PostUpdateView(UpdateView):
-  model = Post
-  fields = ["title"]
-  success_url = reverse_lazy("posts")
+    model = Post
+    fields = ["title"]
+    success_url = reverse_lazy("posts")
 
 class PostDeleteView(DeleteView):
-  model = Post
-  success_url = reverse_lazy("posts")
+    model = Post
+    success_url = reverse_lazy("posts")
 
 def signUp(request):
     if request.method == "POST": 
@@ -95,35 +98,31 @@ def updateProfile(request):
     if request.method == "POST":
         form = UpdateProfileForm(request.POST)
         if form.is_valid():
-            user = User.objects.get(id=request.user.id)  # Obtém o usuário autenticado
+            user = User.objects.get(id=request.user.id)
             first_name = form.cleaned_data["name"].lower()
             last_name = form.cleaned_data["surname"].lower()
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             
-            # Verifica se o novo nome de usuário já está em uso por outro usuário
             if User.objects.filter(username=username).exclude(id=user.id).exists():
                 return HttpResponse("The username is already taken.")
             
-            # Atualiza os campos permitidos
             user.first_name = first_name
             user.last_name = last_name
             user.username = username
             
-            # Atualiza a senha apenas se fornecida
             if password:
                 user.set_password(password)
             
-            user.save()  # Salva as alterações no banco de dados
+            user.save()
             
-            # Reautentica o usuário após a alteração da senha
             if password:
                 user = authenticate(username=username, password=password)
                 login(request, user)
             
             authenticate(request, username=username, password=password)
             
-            return redirect("posts")  # Redireciona para a página de perfil
+            return redirect("posts")
         else:
             return HttpResponse("Invalid form data. Please try again.")
     else:
@@ -133,3 +132,14 @@ def updateProfile(request):
             "username": request.user.username,
         })
         return render(request, "api/update_profile.html", {"form": form})
+
+
+def follow_user(request, user_id):
+    followed_user = get_object_or_404(User, id=user_id)
+    Follower.objects.get_or_create(user=request.user, followed=followed_user)
+    return redirect("posts")
+
+def unfollow_user(request, user_id):
+    followed_user = get_object_or_404(User, id=user_id)
+    Follower.objects.filter(user=request.user, followed=followed_user).delete()
+    return redirect("posts")

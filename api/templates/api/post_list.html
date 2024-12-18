@@ -12,7 +12,19 @@
         <div class="container">
             <div>
                 {% comment %} <th scope="row">{{ post.pk }}</th> {% endcomment %}
-                <p>@{{ post.user.username }} <a href="" class="bg-primary text-light rounded p-1">+ Seguir</a></p>
+                <p>@{{ post.user.username }} 
+                    {% if post.user.username != user.username %}
+                        {% if post.user.id in following %}
+                            <a href="{% url 'unfollow_user' post.user.id %}" class="bg-danger text-light rounded p-1">
+                                - Unfollow
+                            </a>
+                        {% else %}
+                            <a href="{% url 'follow_user' post.user.id %}" class="bg-primary text-light rounded p-1">
+                                + Follow
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </p>
                 <h3 class="alert alert-dark bg-light text-primary"><strong>{{ post.title }}</strong></h3> </br>
                 <p class="text-secondary">Published at {{ post.created_at }}</p>
                 {% if post.updatedAt and post.updatedAt != post.created_at %}

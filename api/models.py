@@ -14,3 +14,16 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+from django.contrib.auth.models import User
+from django.db import models
+
+class Follower(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+
+    class Meta:
+        unique_together = ('user', 'followed')
+
+    def __str__(self):
+        return f"{self.user.username} -> {self.followed.username}"
